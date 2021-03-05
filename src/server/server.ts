@@ -95,7 +95,7 @@ app.post('/transcripts/:studentID/:term/:course', (req, res) => {
     const studentID = parseInt(req.params.studentID);
     const course = req.params.course as string;
     const grade = parseInt(req.body.grade as string);
-    const term = req.params.term as string;
+    const term = req.params.term as string;    
     if(!grade) {
       res.status(400).send(`Invalid grade, must be a number. Got ${req.body.grade}`);
       return;
@@ -127,7 +127,7 @@ app.get('/transcripts/:studentID/:term/:course', (req, res) => {
     }
     res
       .status(200)
-      .send({studentID, course, grade});
+      .send({studentID, course, grade, term});
   } catch (e) {
     res.status(400).send(e);
   }

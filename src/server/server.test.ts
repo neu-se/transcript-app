@@ -66,39 +66,40 @@ describe('TranscriptREST', () => {
 
   describe('addGrade API', () => {
     test('student not present', async () => {
-      await expect(axios.post(`${baseurl}/transcripts/6/cs101`, { grade: 75 })).rejects.toThrow();
+      await expect(axios.post(`${baseurl}/transcripts/6/spring-2021/cs101`, { grade: 75 })).rejects.toThrow();
     });
     test('grade already present', async () => {
-      const gradeList = [{ course: 'CS 5500', grade: 89 }];
+      const gradeList = [{ course: 'CS 5500', grade: 89 , term: 'spring-2021'}];
       const studentID = addStudent('ryan', gradeList);
       // also testing %20 for space:
-      await expect(axios.post(`${baseurl}/transcripts/${studentID}/CS%205500`, { grade: 90 })).rejects.toThrow();
+      await expect(axios.post(`${baseurl}/transcripts/${studentID}/spring-2021/CS%205500`, { grade: 90 })).rejects.toThrow();
     });
     test('grade not defined', async () => {
-      await expect(axios.post(`${baseurl}/transcripts/3/CS%205500`, { grad: true })).rejects.toThrow();
+      await expect(axios.post(`${baseurl}/transcripts/3/spring-2021/CS%205500`, { grad: true })).rejects.toThrow();
     });
     test('grade not numeric', async () => {
-      await expect(axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: 'A-' })).rejects.toThrow();
+      await expect(axios.post(`${baseurl}/transcripts/3/spring-2021/CS%205500`, { grade: 'A-' })).rejects.toThrow();
     });
     test('grade OK', async () => {
-      await axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: 89 });
-      expect(getGrade(3, 'CS 5500')).toEqual(89);
+      await axios.post(`${baseurl}/transcripts/3/spring-2021/CS%205500`, { grade: 89 });
+      expect(getGrade(3, 'CS 5500','spring-2021')).toEqual(89);
     });
   });
 
   describe('getGrade API', () => {
     test('student not present', async () => {
-      await expect(axios.get(`${baseurl}/transcripts/6/cs101`)).rejects.toThrow();
+      await expect(axios.get(`${baseurl}/transcripts/6/spring-2021/cs101`)).rejects.toThrow();
     });
     test('no grade present for this student/course', async () => {
-      await expect(axios.get(`${baseurl}/transcripts/3/CS%205500`)).rejects.toThrow();
+      await expect(axios.get(`${baseurl}/transcripts/3/spring-2021/CS%205500`)).rejects.toThrow();
     });
     test('get grade present', async () => {
-      const gradeList = [{ course: 'CS 5500', grade: 89 }];
+      const gradeList = [{ course: 'CS 5500', grade: 89 , term: 'spring-2021'}];
       const studentID = addStudent('ryan', gradeList);
-      const { data } = await axios.get<{ course:string, grade:number }>(`${baseurl}/transcripts/${studentID}/CS%205500`);
+      const { data } = await axios.get<{ course:string, grade:number, term:string }>(`${baseurl}/transcripts/${studentID}/spring-2021/CS%205500`);
       expect(data.course).toBe('CS 5500');
       expect(data.grade).toEqual(89);
+      expect(data.term).toEqual('spring-2021');
     });
   });
 
