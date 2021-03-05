@@ -130,6 +130,34 @@ app.get('/transcripts/:studentID/:course', (req, res) => {
   }
 });
 
+app.patch('/transcripts/:studentID/:course', (req, res) => {
+  
+  try {
+    const studentID = parseInt(req.params.studentID);
+    const {course} = req.params;
+
+    // Hello World
+    const grade = parseInt(req.body.grade);
+    const former = parseInt(req.body.former);
+
+    const reason = req.body.reason;
+    if (reason === undefined) {
+      throw new Error();
+    }
+    
+    if (reason.length === 0) {
+      res.status(400).send(`reason`)
+    }
+    if (former === grade) {
+      res.status(200).send()
+    }
+ 
+  } catch (e) {
+    res.status(400).send(e);
+  }
+
+});
+
 // custom default actions
 // helpful for debugging
 // this posts to the server console so we'll know we got here
