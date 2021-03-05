@@ -23,7 +23,7 @@ export const TranscriptApp = () => {
         const update = await remoteTranscriptManager.getTranscript(studentID);
 
         //React will decide to re-render the component when we do setTranscripts with a new array... but not if we update the old array.
-        const newTranscripts = transcripts.map(transcript => transcript.student.studentID == update?.student.studentID ? update : transcript);
+        const newTranscripts = transcripts.map(transcript => transcript.student.studentID === update?.student.studentID ? update : transcript);
         setTranscripts(newTranscripts);
     };
 

@@ -16,6 +16,7 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
+    Select,
     NumberDecrementStepper,
     NumberIncrementStepper,
     NumberInput,
@@ -27,20 +28,22 @@ import {
     useToast
 } from "@chakra-ui/react"
 
-import {Transcript as TranscriptType} from '../types/transcript';
+import {Grade, Transcript as TranscriptType} from '../types/transcript';
 import {MdCheckCircle, MdRemoveCircle} from "react-icons/all";
 import {remoteTranscriptManager} from "../client/client";
 import {RefreshStudentCallbackType} from "./TranscriptApp";
+
+const gradeList = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'I', 'P', 'NP', 'S', 'U', 'NR'];
 
 export type TranscriptProps = {
     transcript: TranscriptType;
     refreshTranscript: RefreshStudentCallbackType;
 }
 
-function renderGrade(grade: { course: string, grade: number }) {
+function renderGrade(grade: { course: string, grade: Grade }) {
     let icon = MdCheckCircle;
     let iconColor = "green.500";
-    if (grade.grade < 60) {
+    if (grade.grade === Grade.F) {
         icon = MdRemoveCircle;
         iconColor = "red.500";
     }
@@ -63,10 +66,15 @@ const AddGradeOverlay: React.FunctionComponent<{ studentID: number, refreshTrans
                     event.preventDefault();
                     // @ts-ignore
                     const formElements = event.target as HTMLInputElement[];
-                    const courseName = formElements[0].value;
-                    const grade = formElements[1].value;
+                    const courseName = formElements[0].value
+                    let gradeTemp = gradeList.find(val => val === formElements[1].value);
+                    let grade : Grade =  Grade['A'];
+                    if (gradeTemp) {
+                        grade = Grade['A']
+                    }
+                    
                     try {
-                        await remoteTranscriptManager.addGrade(studentID, courseName, Number.parseInt(grade));
+                        await remoteTranscriptManager.addGrade(studentID, courseName,Grade['A']);
                         toast({
                             title: "Grade Saved!",
                             isClosable:true,
@@ -95,13 +103,9 @@ const AddGradeOverlay: React.FunctionComponent<{ studentID: number, refreshTrans
 
                         <FormControl mt={4} isRequired>
                             <FormLabel>Grade</FormLabel>
-                            <NumberInput defaultValue={95} name="grade">
-                                <NumberInputField/>
-                                <NumberInputStepper>
-                                    <NumberIncrementStepper/>
-                                    <NumberDecrementStepper/>
-                                </NumberInputStepper>
-                            </NumberInput>
+                            <Select placeholder="Select option">
+                            {gradeList.map(val => (<option value={val}>{val}</option>))}
+                            </Select>
                         </FormControl>
                     </ModalBody>
 
