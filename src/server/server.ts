@@ -96,6 +96,9 @@ app.post('/transcripts/:studentID/:term/:course', (req, res) => {
     const course = req.params.course as string;
     const grade = parseInt(req.body.grade as string);
     const term = req.params.term as string;    
+    if(!term.match(/[a-zA-Z]+-[0-9]{4}/)){
+      res.status(400).send(`Invalid term, must be of the format Spring-2021. Got ${term}`);
+    }
     if(!grade) {
       res.status(400).send(`Invalid grade, must be a number. Got ${req.body.grade}`);
       return;

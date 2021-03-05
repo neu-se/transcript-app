@@ -80,6 +80,11 @@ describe('TranscriptREST', () => {
     test('grade not numeric', async () => {
       await expect(axios.post(`${baseurl}/transcripts/3/spring-2021/CS%205500`, { grade: 'A-' })).rejects.toThrow();
     });
+    test('term is not valid', async () => {
+      await expect(axios.post(`${baseurl}/transcripts/3/spring2021/CS%205500`, { grade: 90 })).rejects.toThrow();
+      await expect(axios.post(`${baseurl}/transcripts/3/spring-/CS%205500`, { grade: 90 })).rejects.toThrow();
+      await expect(axios.post(`${baseurl}/transcripts/3/2021spring/CS%205500`, { grade: 90 })).rejects.toThrow();
+    });
     test('grade OK', async () => {
       await axios.post(`${baseurl}/transcripts/3/spring-2021/CS%205500`, { grade: 89 });
       expect(getGrade(3, 'CS 5500','spring-2021')).toEqual(89);
