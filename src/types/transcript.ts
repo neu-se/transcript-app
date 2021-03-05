@@ -1,6 +1,7 @@
 export type StudentID = number;
 export type Student = { studentID: number, studentName: string };
-export type Course = string;
+export type Course =  string;
+export type CourseDescription = { courseName: Course, description: string }
 export type Grade = number;
 export type CourseGrade = { course: Course, grade: Grade };
 export type Transcript = { student: Student, grades: CourseGrade[] };
@@ -54,4 +55,10 @@ export interface TranscriptManager {
      * @param course course to request grade for
      */
     getGrade(studentID: StudentID, course: Course): number|undefined;
+
+    getCourseDescriptions(): CourseDescription[];
+
+    getCourseDescription(courseName: Course): CourseDescription | undefined
+
+    addCourseDescription(courseName: Course, description: string): void;
 }
