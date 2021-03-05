@@ -1,7 +1,7 @@
 export type StudentID = number;
 export type Student = { studentID: number, studentName: string };
 export type Course = string;
-export type Grade = number;
+export enum Grade { 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'I', 'P', 'NP', 'S', 'U', 'NR'};
 export type CourseGrade = { course: Course, grade: Grade };
 export type Transcript = { student: Student, grades: CourseGrade[] };
 

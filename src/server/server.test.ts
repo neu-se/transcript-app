@@ -102,7 +102,13 @@ describe('TranscriptREST', () => {
     });
   });
 
-  describe('issue #1', () => {
+  describe('addGrade API', () => {
+    test('grade not alphabet', async () => {
+      await expect(axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: 90 })).rejects.toThrow();
+    });
+    test('grade not in List', async () => {
+      await expect(axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: 'Z' })).rejects.toThrow();
+    });
 
   });
 });
