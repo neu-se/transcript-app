@@ -8,3 +8,9 @@ test("renders learn react link", () => {
   const linkElement = screen.getByText(/learn chakra/i)
   expect(linkElement).toBeInTheDocument()
 })
+
+test("edit server button is seen", () => {
+  render(<App />)
+  const buttonElement = screen.getByText(/Edit the server/);
+  expect(buttonElement).toBeInTheDocument();
+})
