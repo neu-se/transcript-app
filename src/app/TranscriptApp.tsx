@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Stack} from '@chakra-ui/react';
+import {Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack} from '@chakra-ui/react';
 
 import {CourseGrade as GradeType, Transcript} from '../types/transcript';
 import {CourseGrade} from './CourseGrade';
@@ -33,7 +33,16 @@ export const TranscriptApp = () => {
             setTranscripts(loadedData);
         })
     }, [])
-    // TODO: Add button
+    function changeServerAddress() {
+    <Modal isOpen={true} onClose={() => console.log()}>
+        <ModalOverlay/>
+        <ModalContent>
+            <ModalHeader>Add a new student</ModalHeader>
+        <ModalCloseButton/>
+        </ModalContent>
+    </Modal>
+    }
+
     return <Stack direction="column">
         <AddStudentModal appendTranscript={async (newStudentID: number) => {
             const update = await remoteTranscriptManager.getTranscript(newStudentID);
@@ -41,5 +50,6 @@ export const TranscriptApp = () => {
             setTranscripts([update].concat(transcripts));
         }} />
         {transcripts.map(transcript => <StudentView key={transcript.student.studentID} transcript={transcript} refreshTranscript={refreshTranscript} />)}
+        <button onClick={() => changeServerAddress}>Edit the server</button>
     </Stack>;
 }
