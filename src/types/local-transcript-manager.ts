@@ -99,6 +99,11 @@ export function getGrade(studentID: StudentID, course: Course): number {
 
 }
 
+export function addCourse(name:string, description:string): void {
+  
+
+}
+
 export const transcriptManager : TranscriptManager = {
   addStudent(name : string) { return addStudent(name,[]); },
   getStudentIDs(name?:string) : StudentID[] {
