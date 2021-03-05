@@ -71,6 +71,17 @@ app.get('/transcripts/:id', (req, res) => {
   }
 });
 
+app.delete('/transcripts/:id', (req, res) => {
+  const {id} = req.params;
+  console.log(`Handling DELETE /transcripts/:id id = ${id}`);
+  const theTranscript = db.deleteTranscript(parseInt(id));
+  if (theTranscript === undefined) {
+    res.status(404).send(`No student with id = ${id}`);
+  } else {
+    res.status(200).send(theTranscript);
+  }
+});
+
 // GET  /studentids?name=string
 // returns list of IDs for student with the given name
 // returns empty list if none

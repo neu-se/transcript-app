@@ -36,7 +36,7 @@ export async function getAllStudentIDs() : Promise<StudentID[]> {
 DELETE /transcripts/:ID
 -- deletes transcript for student with the given ID, fails if no such student
 */
-export async function deleteStudent(studentID: StudentID): Promise<void> {
+export async function deleteTranscript(studentID: StudentID): Promise<void> {
   return remoteDelete(`/transcripts/${studentID}`);
 }
 
@@ -94,6 +94,7 @@ export const remoteTranscriptManager : Promisify<TranscriptManager> = {
   addStudent: addStudent,
   getAll: getAllTranscripts,
   getTranscript : getTranscript,
+  deleteTranscript: deleteTranscript,
   getStudentIDs(name?: string) : Promise<StudentID[]> {
     if (name) return getStudentIDs(name);
     return getAllStudentIDs();
