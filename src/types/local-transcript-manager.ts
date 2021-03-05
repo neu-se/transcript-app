@@ -118,4 +118,11 @@ export const transcriptManager : TranscriptManager = {
       return undefined;
     }
   },
+  deleteStudent(studentID : StudentID) : void {
+    try {
+      return deleteStudent(studentID)
+    } catch {
+      return undefined;
+    }
+  },
 }

@@ -54,4 +54,6 @@ export interface TranscriptManager {
      * @param course course to request grade for
      */
     getGrade(studentID: StudentID, course: Course): number|undefined;
+
+    deleteStudent(studentID : StudentID) : void;
 }

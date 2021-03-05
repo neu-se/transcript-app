@@ -27,7 +27,7 @@ import {
     useToast
 } from "@chakra-ui/react"
 
-import {Transcript as TranscriptType} from '../types/transcript';
+import { Transcript as TranscriptType, Transcript } from '../types/transcript';
 import {MdCheckCircle, MdRemoveCircle} from "react-icons/all";
 import {remoteTranscriptManager} from "../client/client";
 import {RefreshStudentCallbackType} from "./TranscriptApp";
@@ -49,7 +49,7 @@ function renderGrade(grade: { course: string, grade: number }) {
 }
 
 const AddGradeOverlay: React.FunctionComponent<{ studentID: number, refreshTranscript: RefreshStudentCallbackType }> = ({studentID, refreshTranscript}) => {
-    const {isOpen: addGradeOpen, onOpen: onOpenAddGrade, onClose: onCloseAddGrade} = useDisclosure()
+    const {isOpen: addGradeOpen, onOpen: onOpenAddGrade, onClose: onCloseAddGrade } = useDisclosure()
     const toast = useToast()
 
     return <>
@@ -114,7 +114,23 @@ const AddGradeOverlay: React.FunctionComponent<{ studentID: number, refreshTrans
                 </form>
             </ModalContent>
         </Modal>
+         
+        <Button onClick={async () => {
+                await remoteTranscriptManager.deleteStudent(studentID);
+                toast({
+                    title: "Deleted Successfully!",
+                    isClosable:true,
+                    duration: 1500,
+                    status: "success"
+                })
+                await refreshTranscript(studentID);
+                onCloseAddGrade();
+        }}>Delete Student Transcript</Button>            
+             
+    
     </>
+
+
 }
 export const StudentView: React.FunctionComponent<TranscriptProps> = ({transcript, refreshTranscript}) => {
     return <Box borderWidth="1px" borderRadius="lg">
