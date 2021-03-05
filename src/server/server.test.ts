@@ -69,7 +69,7 @@ describe('TranscriptREST', () => {
       await expect(axios.post(`${baseurl}/transcripts/6/cs101`, { grade: 75 })).rejects.toThrow();
     });
     test('grade already present', async () => {
-      const gradeList = [{ course: 'CS 5500', grade: 89 }];
+      const gradeList = [{ course: 'CS 5500', term: 'Spring-2021', grade: 89 }];
       const studentID = addStudent('ryan', gradeList);
       // also testing %20 for space:
       await expect(axios.post(`${baseurl}/transcripts/${studentID}/CS%205500`, { grade: 90 })).rejects.toThrow();
@@ -94,7 +94,7 @@ describe('TranscriptREST', () => {
       await expect(axios.get(`${baseurl}/transcripts/3/CS%205500`)).rejects.toThrow();
     });
     test('get grade present', async () => {
-      const gradeList = [{ course: 'CS 5500', grade: 89 }];
+      const gradeList = [{ course: 'CS 5500', term: 'Spring-2021', grade: 89 }];
       const studentID = addStudent('ryan', gradeList);
       const { data } = await axios.get<{ course:string, grade:number }>(`${baseurl}/transcripts/${studentID}/CS%205500`);
       expect(data.course).toBe('CS 5500');
@@ -102,7 +102,14 @@ describe('TranscriptREST', () => {
     });
   });
 
-  describe('issue #1', () => {
-
+  describe('Enhancement #5: Course Grade type to include a required term', () => {
+    test('get grade present', async () => {
+      const gradeList = [{ course: 'CS 5500', grade: 89, term: 'Spring-2021' }];
+      const studentID = addStudent('ryan', gradeList);
+      const { data } = await axios.get<{ course:string, grade:number, term:string }>(`${baseurl}/transcripts/${studentID}/Spring-2021/CS%205500`);
+      expect(data.course).toBe('CS 5500');
+      expect(data.grade).toEqual(89);
+      expect(data.term).toBeDefined();
+    });
   });
 });
