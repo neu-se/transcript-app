@@ -90,18 +90,20 @@ app.get('/studentids', (req, res) => {
 // Fails with 400 (Bad Request) if there is already an entry for this course
 //  in the student's transcript
 
-app.post('/transcripts/:studentID/:course', (req, res) => {
+app.post('/transcripts/:studentID/:term/:course', (req, res) => {
   try {
     const studentID = parseInt(req.params.studentID);
     const course = req.params.course as string;
     const grade = parseInt(req.body.grade as string);
+    const term = req.params.term as string;
     if(!grade) {
       res.status(400).send(`Invalid grade, must be a number. Got ${req.body.grade}`);
       return;
     }
+
     console.log
     (`Handling POST studentid = ${studentID}; course = ${course}, grade = ${grade}`);
-    db.addGrade(studentID, course, grade);
+    db.addGrade(studentID, course, grade, term);
     res.sendStatus(200);
   } catch (e) {
     // console.trace(e);
@@ -113,12 +115,13 @@ app.post('/transcripts/:studentID/:course', (req, res) => {
 // returns the student's grade in the specified course.
 // Fails if student or course is missing.
 // uses function getGrade(studentID:StudentID, course:Course) : number
-app.get('/transcripts/:studentID/:course', (req, res) => {
+app.get('/transcripts/:studentID/:term/:course', (req, res) => {
   try {
     const studentID = parseInt(req.params.studentID);
     const {course} = req.params;
     console.log(`Handling GET studentID=${studentID} course = ${course}`);
-    const grade = db.getGrade(studentID, course);
+    const term = req.params.term;
+    const grade = db.getGrade(studentID, course,term);
     if (grade == undefined) {
       res.status(400).send(`not grade for ${studentID} in ${course}`)
     }

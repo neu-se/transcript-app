@@ -2,7 +2,8 @@ export type StudentID = number;
 export type Student = { studentID: number, studentName: string };
 export type Course = string;
 export type Grade = number;
-export type CourseGrade = { course: Course, grade: Grade };
+export type Term = string;
+export type CourseGrade = { course: Course, grade: Grade, term: Term };
 export type Transcript = { student: Student, grades: CourseGrade[] };
 
 export interface TranscriptManager {
@@ -44,7 +45,7 @@ export interface TranscriptManager {
      * @throws Error if student not in system or 
      * if course already on transcript with a different grade.
      */
-    addGrade(studentID: StudentID, course: Course, grade: Grade) : void;
+    addGrade(studentID: StudentID, course: Course, grade: Grade, term: Term) : void;
 
     /**
      * Get the grade for this student in this course.
@@ -53,5 +54,5 @@ export interface TranscriptManager {
      * @param studentID student ID of student
      * @param course course to request grade for
      */
-    getGrade(studentID: StudentID, course: Course): number|undefined;
+    getGrade(studentID: StudentID, course: Course, term: Term): number|undefined;
 }

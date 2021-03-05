@@ -65,8 +65,9 @@ const AddGradeOverlay: React.FunctionComponent<{ studentID: number, refreshTrans
                     const formElements = event.target as HTMLInputElement[];
                     const courseName = formElements[0].value;
                     const grade = formElements[1].value;
+                    const term = 'Spring-2021';
                     try {
-                        await remoteTranscriptManager.addGrade(studentID, courseName, Number.parseInt(grade));
+                        await remoteTranscriptManager.addGrade(studentID, courseName, Number.parseInt(grade), term);
                         toast({
                             title: "Grade Saved!",
                             isClosable:true,

@@ -1,5 +1,5 @@
 import { remoteDelete, remoteGet, remotePost } from './remoteService';
-import { Course, Grade, StudentID, Transcript, TranscriptManager } from '../types/transcript';
+import { Course, Grade, StudentID, Term, Transcript, TranscriptManager } from '../types/transcript';
 
 import { Promisify } from '../types/promise-utils';
 /*
@@ -45,18 +45,18 @@ export async function deleteStudent(studentID: StudentID): Promise<void> {
 -- adds an entry in this student's transcript with given name and course.
 -- Requires a post parameter 'grade'. Fails if there is already an entry for this course in the student's transcript
 */
-export async function addGrade(studentID: StudentID, course: Course, grade: Grade)
+export async function addGrade(studentID: StudentID, course: Course, grade: Grade, term: Term)
   : Promise<void> {
-  await remotePost(`/transcripts/${studentID}/${course}`, { grade });
+  await remotePost(`/transcripts/${studentID}/${term}/${course}`, { grade });
 }
 
 // GET /transcripts/:studentID/:course
 // returns the student's grade in the specified course as a
 // TS object.
 // Fails if student or course is missing.
-export async function getGrade(studentID: StudentID, course: Course)
+export async function getGrade(studentID: StudentID, course: Course, term: Term)
   : Promise<Grade> {
-  const { grade } = await remoteGet(`/transcripts/${studentID}/${course}`);
+  const { grade } = await remoteGet(`/transcripts/${studentID}/${term}/${course}`);
   return grade
 }
 
@@ -72,20 +72,20 @@ export async function uploadTranscript(tr:Transcript) : Promise<unknown> {
     student.studentID = studentID;
     console.log(`Got ${studentID} for ${student.studentName}`);
   }
-  const ps = grades.map((cg) => addGrade(student.studentID, cg.course, cg.grade));
+  const ps = grades.map((cg) => addGrade(student.studentID, cg.course, cg.grade, cg.term));
   return Promise.all(ps);
 }
 
-async function getGradeOrNegative(studentID : number, courseName : string) : Promise<number> {
+async function getGradeOrNegative(studentID : number, courseName : string, term : Term) : Promise<number> {
   try {
-    return await getGrade(studentID, courseName);
+    return await getGrade(studentID, courseName, term);
   } catch {
     return -1;
   }
 }
-export async function averageGrade(courseName : string) : Promise<number> {
+export async function averageGrade(courseName : string, term : Term) : Promise<number> {
   const ids = await getAllStudentIDs();
-  const rawGrades = await Promise.all(ids.map((id) => getGradeOrNegative(id, courseName)));
+  const rawGrades = await Promise.all(ids.map((id) => getGradeOrNegative(id, courseName, term)));
   const nonZero = rawGrades.filter((n) => n >= 0);
   return nonZero.reduce((g1,g2) => g1 + g2) / nonZero.length;
 }

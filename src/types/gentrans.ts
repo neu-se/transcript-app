@@ -18,6 +18,9 @@ export function randomTranscript() : Transcript {
         grades : possibleCourses
             .filter( () => SELECT > Math.random())
             .map((cn) => ({ grade : Math.random() * 100,
-                            course : cn })),
+                            course : cn,
+                        term : 'Spring-2021' })),
+                            
+
     }
 }

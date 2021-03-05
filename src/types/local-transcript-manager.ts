@@ -1,5 +1,6 @@
 // Manage the transcript database locally
-import {StudentID, Student, Course, Grade, CourseGrade, Transcript, TranscriptManager} from './transcript';
+import { BiTerminal } from 'react-icons/bi';
+import {StudentID, Student, Course, Grade, CourseGrade, Transcript, TranscriptManager, Term} from './transcript';
 // manage the transcript database
 
 // the database of transcript
@@ -8,10 +9,10 @@ let allTranscripts: Transcript[] = [];
 export function initialize() {
   allTranscripts = [];
   StudentIDManager.reset();
-  addStudent('avery', [{course: 'DemoClass', grade: 100}, {course: 'DemoClass2', grade: 100} ]);
-  addStudent('blake', [{course: 'DemoClass', grade: 80}]);
-  addStudent('blake', [{course: 'DemoClass', grade: 85}, {course: 'DemoClass2', grade: 40}]);
-  addStudent('casey', [{course: 'DemoClass2', grade: 100}]);
+  addStudent('avery', [{course: 'DemoClass', grade: 100, term: 'Spring-2021'}, {course: 'DemoClass2', grade: 100, term: 'Spring-2021'} ]);
+  addStudent('blake', [{course: 'DemoClass', grade: 80, term: 'Spring-2021'}]);
+  addStudent('blake', [{course: 'DemoClass', grade: 85, term: 'Spring-2021'}, {course: 'DemoClass2', grade: 40, term: 'Spring-2021'}]);
+  addStudent('casey', [{course: 'DemoClass2', grade: 100, term: 'Spring-2021'}]);
 }
 
 export function getAll() {
@@ -61,14 +62,14 @@ export function deleteStudent(studentID: StudentID): void {
   allTranscripts.splice(index, 1);
 }
 
-export function addGrade(studentID: StudentID, course: Course, grade: number): void {
+export function addGrade(studentID: StudentID, course: Course, grade: number, term: string): void {
   const tIndex = allTranscripts.findIndex(t => (t.student.studentID === studentID));
   if (tIndex === -1) {
     throw new Error(`no student with ID = ${studentID}`);
   }
   const theTranscript = allTranscripts[tIndex];
   try {
-    allTranscripts[tIndex] = addGradeToTranscript(theTranscript, course, grade);
+    allTranscripts[tIndex] = addGradeToTranscript(theTranscript, course, grade, term);
   } catch (e) {
     throw new Error(`student ${studentID} already has a grade in course ${course}`);
   }
@@ -76,7 +77,7 @@ export function addGrade(studentID: StudentID, course: Course, grade: number): v
 
 // returns transcript like the original, but with the new grade added.
 // throws an error if the course is already on the transcript
-function addGradeToTranscript(theTranscript: Transcript, course: Course, grade: number): Transcript {
+function addGradeToTranscript(theTranscript: Transcript, course: Course, grade: number, term: string): Transcript {
   const {grades} = theTranscript;
   const index = grades.findIndex(entry => entry.course === course) 
   if (index !== -1) {
@@ -84,15 +85,15 @@ function addGradeToTranscript(theTranscript: Transcript, course: Course, grade: 
     if (grades[index].grade === grade) return theTranscript;
     throw new Error();
   }
-  return {student: theTranscript.student, grades: grades.concat({course, grade})};
+  return {student: theTranscript.student, grades: grades.concat({course, grade, term})};
 }
 
 //
-export function getGrade(studentID: StudentID, course: Course): number {
+export function getGrade(studentID: StudentID, course: Course, term: Term): number {
   const theTranscript = allTranscripts.find(t => t.student.studentID === studentID);
-  const theGrade = theTranscript?.grades.find(g => g.course === course);
+  const theGrade = theTranscript?.grades.find(g => g.course === course && g.term === term);
   if (theGrade === undefined) {
-    throw new Error(`no grade for student ${studentID} in course ${course}`);
+    throw new Error(`no grade for student ${studentID} in course ${course} and term ${term}`);
   }
 
   return theGrade.grade;
@@ -111,9 +112,9 @@ export const transcriptManager : TranscriptManager = {
   getAll : getAll,
   getTranscript : getTranscript,
   addGrade : addGrade,
-  getGrade(studentID : StudentID, course : Course) : Grade|undefined {
+  getGrade(studentID : StudentID, course : Course, term : Term) : Grade|undefined {
     try {
-      return getGrade(studentID, course);
+      return getGrade(studentID, course, term);
     } catch {
       return undefined;
     }
