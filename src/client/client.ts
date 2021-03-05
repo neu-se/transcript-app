@@ -1,7 +1,8 @@
 import { remoteDelete, remoteGet, remotePost } from './remoteService';
-import { Course, Grade, StudentID, Transcript, TranscriptManager } from '../types/transcript';
+import { Course, CourseDetails, Grade, StudentID, Transcript, TranscriptManager } from '../types/transcript';
 
 import { Promisify } from '../types/promise-utils';
+
 /*
  POST /transcripts
  -- adds a new student to the database, returns an ID for this student.
@@ -90,6 +91,14 @@ export async function averageGrade(courseName : string) : Promise<number> {
   return nonZero.reduce((g1,g2) => g1 + g2) / nonZero.length;
 }
 
+export async function addCourse(courseName: string,courseDescription:string): Promise<void> {
+  await remotePost('/courses', { name: courseName,description:courseDescription });
+}
+
+export async function getCourses(): Promise<CourseDetails[]> {
+  return remoteGet(`/courses`);
+}
+
 export const remoteTranscriptManager : Promisify<TranscriptManager> = {
   addStudent: addStudent,
   getAll: getAllTranscripts,
@@ -100,4 +109,6 @@ export const remoteTranscriptManager : Promisify<TranscriptManager> = {
   },
   addGrade : addGrade,
   getGrade : getGrade,
+  getCourses : getCourses,
+  addCourse : addCourse
 }
