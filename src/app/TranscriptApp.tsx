@@ -7,6 +7,7 @@ import {StudentView} from './StudentView';
 import {remoteTranscriptManager} from "../client/client";
 import {AddStudentModal} from "./AddStudentModal";
 import assert from 'assert';
+import {AddRESTModal} from "./AddRESTModal";
 
 const emptyTranscript = {
     student: {studentName: 'No One', studentID: 0},
@@ -38,6 +39,13 @@ export const TranscriptApp = () => {
         <AddStudentModal appendTranscript={async (newStudentID: number) => {
             const update = await remoteTranscriptManager.getTranscript(newStudentID);
             assert(update);
+
+            setTranscripts([update].concat(transcripts));
+        }} />
+        <AddRESTModal appendTranscript={async (newStudentID: number) => {
+            const update = await remoteTranscriptManager.getTranscript(newStudentID);
+            assert(update);
+
             setTranscripts([update].concat(transcripts));
         }} />
         {transcripts.map(transcript => <StudentView key={transcript.student.studentID} transcript={transcript} refreshTranscript={refreshTranscript} />)}

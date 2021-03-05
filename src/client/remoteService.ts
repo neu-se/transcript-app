@@ -5,6 +5,16 @@ import axios, { AxiosResponse } from 'axios';
 // where to send the requests
 axios.defaults.baseURL = 'https://rest-example.covey.town';
 
+
+
+export async function updateBaseURL<T>(path:string) : Promise<{ isOk: boolean }> {
+  axios.defaults.baseURL = path
+  return {
+    isOk: true
+  }
+}
+
+
 export async function remoteGet<T>(path:string) : Promise<T> {
   try {
     const response : AxiosResponse<T> = await axios.get(path);
