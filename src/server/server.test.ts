@@ -102,7 +102,15 @@ describe('TranscriptREST', () => {
     });
   });
 
-  describe('issue #1', () => {
+  describe('Delete Student Transcript #2', async () => {
+    const gradeList = [{ course: 'CS 5500', grade: 89 }];
+    const studentID = addStudent('ryan', gradeList);
+    axios.delete(`${baseurl}/transcripts/${studentID}`);
+    const { data } = await axios.get<{ course:string, grade:number }>(`${baseurl}/transcripts/${studentID}`);
+    expect(data.course).toBe(undefined); 
+    expect(data.grade).toBe(undefined);
+    expect(data.course).not.toBe('CS 5500');
+    expect(data.grade).not.toBe(89);
 
   });
 });

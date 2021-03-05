@@ -100,4 +100,5 @@ export const remoteTranscriptManager : Promisify<TranscriptManager> = {
   },
   addGrade : addGrade,
   getGrade : getGrade,
+  deleteStudent : deleteStudent,
 }
