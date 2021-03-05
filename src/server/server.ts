@@ -113,18 +113,18 @@ app.post('/transcripts/:studentID/:course', (req, res) => {
 // returns the student's grade in the specified course.
 // Fails if student or course is missing.
 // uses function getGrade(studentID:StudentID, course:Course) : number
-app.get('/transcripts/:studentID/:course', (req, res) => {
+app.get('/transcripts/:studentID/:term/:course', (req, res) => {
   try {
     const studentID = parseInt(req.params.studentID);
-    const {course} = req.params;
-    console.log(`Handling GET studentID=${studentID} course = ${course}`);
-    const grade = db.getGrade(studentID, course);
-    if (grade == undefined) {
-      res.status(400).send(`not grade for ${studentID} in ${course}`)
+    const {course, term} = req.params;
+    console.log(`Handling GET studentID=${studentID} course = ${course} term = ${term}`);
+    const grade = db.getGrade(studentID, course, term);
+    if (grade === undefined) {
+      res.status(400).send(`not grade for ${studentID} in ${course} in ${term}`)
     }
     res
       .status(200)
-      .send({studentID, course, grade});
+      .send({studentID, course, grade, term});
   } catch (e) {
     res.status(400).send(e);
   }

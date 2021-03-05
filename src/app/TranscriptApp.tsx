@@ -10,11 +10,11 @@ import assert from 'assert';
 
 const emptyTranscript = {
     student: {studentName: 'No One', studentID: 0},
-    grades: [{course: "CS 5500", grade: 42}],
+    grades: [{course: "CS 5500", term: 'Spring-2021', grade: 42}],
 };
 
 function renderCourseGrade(cg: GradeType) {
-    return <CourseGrade course={cg.course} grade={cg.grade} key={cg.course}/>
+    return <CourseGrade course={cg.course} term={cg.term} grade={cg.grade} key={cg.course}/>
 }
 export type RefreshStudentCallbackType = (studentID: number) => Promise<void>;
 export const TranscriptApp = () => {
