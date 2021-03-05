@@ -27,7 +27,7 @@ import {
     useToast
 } from "@chakra-ui/react"
 
-import {Transcript as TranscriptType} from '../types/transcript';
+import {Grade, Transcript as TranscriptType} from '../types/transcript';
 import {MdCheckCircle, MdRemoveCircle} from "react-icons/all";
 import {remoteTranscriptManager} from "../client/client";
 import {RefreshStudentCallbackType} from "./TranscriptApp";
@@ -37,10 +37,10 @@ export type TranscriptProps = {
     refreshTranscript: RefreshStudentCallbackType;
 }
 
-function renderGrade(grade: { course: string, grade: number }) {
+function renderGrade(grade: { course: string, grade: Grade }) {
     let icon = MdCheckCircle;
     let iconColor = "green.500";
-    if (grade.grade < 60) {
+    if (grade.grade < Grade.C) {
         icon = MdRemoveCircle;
         iconColor = "red.500";
     }
@@ -64,9 +64,9 @@ const AddGradeOverlay: React.FunctionComponent<{ studentID: number, refreshTrans
                     // @ts-ignore
                     const formElements = event.target as HTMLInputElement[];
                     const courseName = formElements[0].value;
-                    const grade = formElements[1].value;
+                    const grade = formElements[1].value as unknown as Grade;
                     try {
-                        await remoteTranscriptManager.addGrade(studentID, courseName, Number.parseInt(grade));
+                        await remoteTranscriptManager.addGrade(studentID, courseName, grade);
                         toast({
                             title: "Grade Saved!",
                             isClosable:true,
