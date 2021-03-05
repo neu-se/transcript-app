@@ -3,8 +3,8 @@ import { Server } from 'http';
 import { AddressInfo } from 'net';
 import { randomTranscript } from '../types/gentrans';
 import { app } from './server';
-import { Transcript } from '../types/transcript';
-import { initialize, addStudent, getTranscript, getGrade } from '../types/local-transcript-manager';
+import { Grade, Transcript } from '../types/transcript';
+import { initialize, addStudent, getGrade } from '../types/local-transcript-manager';
 
 describe('TranscriptREST', () => {
   let server : Server;
@@ -86,6 +86,28 @@ describe('TranscriptREST', () => {
     });
   });
 
+
+  describe('addGrade Letter GRADE API', () => {
+    test('student not present', async () => {
+      await expect(axios.post(`${baseurl}/transcripts/6/cs101`, { grade: Grade.C })).rejects.toThrow();
+    });
+    test('grade already present', async () => {
+      const gradeList = [{ course: 'CS 5500', grade: Grade.B }];
+      const studentID = addStudent('ryan', gradeList);
+      // also testing %20 for space:
+      await expect(axios.post(`${baseurl}/transcripts/${studentID}/CS%205500`, { grade: Grade.A })).rejects.toThrow();
+    });
+    test('grade not defined', async () => {
+      await expect(axios.post(`${baseurl}/transcripts/3/CS%205500`, { grad: true })).rejects.toThrow();
+    });
+    test('grade not enum type', async () => {
+      await expect(axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: 55 })).rejects.toThrow();
+    });
+    test('grade OK', async () => {
+      await axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: Grade.B });
+      expect(getGrade(3, 'CS 5500')).toEqual(Grade.B);
+    });
+  });
   describe('getGrade API', () => {
     test('student not present', async () => {
       await expect(axios.get(`${baseurl}/transcripts/6/cs101`)).rejects.toThrow();
@@ -99,6 +121,22 @@ describe('TranscriptREST', () => {
       const { data } = await axios.get<{ course:string, grade:number }>(`${baseurl}/transcripts/${studentID}/CS%205500`);
       expect(data.course).toBe('CS 5500');
       expect(data.grade).toEqual(89);
+    });
+  });
+
+  describe('getGrade API Letter grade', () => {
+    test('student not present', async () => {
+      await expect(axios.get(`${baseurl}/transcripts/6/cs101`)).rejects.toThrow();
+    });
+    test('no grade present for this student/course', async () => {
+      await expect(axios.get(`${baseurl}/transcripts/3/CS%205500`)).rejects.toThrow();
+    });
+    test('get grade present', async () => {
+      const gradeList = [{ course: 'CS 5500', grade: Grade.A }];
+      const studentID = addStudent('ryan', gradeList);
+      const { data } = await axios.get<{ course:string, grade:Grade }>(`${baseurl}/transcripts/${studentID}/CS%205500`);
+      expect(data.course).toBe('CS 5500');
+      expect(data.grade).toEqual(Grade.A);
     });
   });
 
