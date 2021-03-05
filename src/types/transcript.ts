@@ -1,6 +1,7 @@
 export type StudentID = number;
 export type Student = { studentID: number, studentName: string };
 export type Course = string;
+export type CourseDetails = {name:string, description:string};
 export type Grade = number;
 export type CourseGrade = { course: Course, grade: Grade };
 export type Transcript = { student: Student, grades: CourseGrade[] };
@@ -54,4 +55,8 @@ export interface TranscriptManager {
      * @param course course to request grade for
      */
     getGrade(studentID: StudentID, course: Course): number|undefined;
+
+    addCourse(courseName:string,courseDescription:string):void;
+
+    getCourses():CourseDetails[]
 }

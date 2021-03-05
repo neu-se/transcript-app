@@ -134,14 +134,22 @@ app.get('/transcripts/:studentID/:course', (req, res) => {
 // helpful for debugging
 // this posts to the server console so we'll know we got here
 // replaces Express's default 404 catcher.
-app.get('/:request*', (req, res) => {
-  console.log(defaultErrorMessage('GET', req.params.request));
-  res.sendStatus(404);
-});
+app.get('/courses', (req, res) => {
+  // use req.query to get value of the parameter
+    const allCourses = db.getCourses()
+    res.status(200).send(allCourses);
+  });
 
-app.post('/:request*', (req, res) => {
-  console.log(defaultErrorMessage('POST', req.params.request));
-  res.sendStatus(404);
+app.post('/courses', (req, res) => {
+  const name = req.body.name as string
+  const description = req.body.description as string
+  if(!name) {
+    res.status(400).send(`No student name specified`);
+    return;
+  }
+  db.addCourse(name,description);
+  res.sendStatus(200);
+  
 });
 
 app.delete('/:request*', (req, res) => {

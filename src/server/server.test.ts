@@ -4,7 +4,7 @@ import { AddressInfo } from 'net';
 import { randomTranscript } from '../types/gentrans';
 import { app } from './server';
 import { Transcript } from '../types/transcript';
-import { initialize, addStudent, getTranscript, getGrade } from '../types/local-transcript-manager';
+import { initialize, addStudent, getTranscript, getGrade, getCourses } from '../types/local-transcript-manager';
 
 describe('TranscriptREST', () => {
   let server : Server;
@@ -102,7 +102,11 @@ describe('TranscriptREST', () => {
     });
   });
 
-  describe('issue #1', () => {
-
+  describe('issue #6', () => {
+    test('postCourse', async () => {
+      const course = { name: 'CS5500',description: 'FSE' }
+      await axios.post(`${baseurl}/courses`, course );
+      expect(getCourses()).toContainEqual(course)
+    });
   });
 });
