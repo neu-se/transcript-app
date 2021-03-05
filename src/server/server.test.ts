@@ -1,15 +1,20 @@
-import axios from 'axios';
-import { Server } from 'http';
-import { AddressInfo } from 'net';
-import { randomTranscript } from '../types/gentrans';
-import { app } from './server';
-import { Transcript } from '../types/transcript';
-import { initialize, addStudent, getTranscript, getGrade } from '../types/local-transcript-manager';
+import axios from "axios";
+import { Server } from "http";
+import { AddressInfo } from "net";
+import { randomTranscript } from "../types/gentrans";
+import { app } from "./server";
+import { Transcript } from "../types/transcript";
+import {
+  initialize,
+  addStudent,
+  getTranscript,
+  getGrade,
+} from "../types/local-transcript-manager";
 
-describe('TranscriptREST', () => {
-  let server : Server;
-  let baseurl : string;
-  beforeAll( () => {
+describe("TranscriptREST", () => {
+  let server: Server;
+  let baseurl: string;
+  beforeAll(() => {
     server = app.listen();
     const address = server.address() as AddressInfo;
     baseurl = `http://127.0.0.1:${address.port}`;
@@ -18,91 +23,148 @@ describe('TranscriptREST', () => {
   beforeEach(() => {
     initialize(); // start with a fresh data base
   });
-  afterAll( () => {
+  afterAll(() => {
     server.close();
   });
 
-  describe('createStudent API', () => {
-    test('a new name', async () => {
-      const { data } = await axios.post<{ studentID:number }>(`${baseurl}/transcripts`, { name: 'Ryan' });
+  describe("createStudent API", () => {
+    test("a new name", async () => {
+      const { data } = await axios.post<{ studentID: number }>(
+        `${baseurl}/transcripts`,
+        { name: "Ryan" }
+      );
       expect(data.studentID).toBeGreaterThan(4);
     });
-    test('a reused name', async () => {
-      const { data } = await axios.post<{ studentID:number }>(`${baseurl}/transcripts`, { name: 'avery' });
+    test("a reused name", async () => {
+      const { data } = await axios.post<{ studentID: number }>(
+        `${baseurl}/transcripts`,
+        { name: "avery" }
+      );
       expect(data.studentID).toBeGreaterThan(4);
     });
   });
 
-  describe('getStudent API', () => {
-    test('student present', async () => {
-      const sample : Transcript = randomTranscript();
+  describe("getStudent API", () => {
+    test("student present", async () => {
+      const sample: Transcript = randomTranscript();
       const studentID = addStudent(sample.student.studentName, sample.grades);
       sample.student.studentID = studentID; // update
       const { data } = await axios.get(`${baseurl}/transcripts/${studentID}`);
       expect(data).toStrictEqual(sample);
     });
-    test('student absent', async () => {
+    test("student absent", async () => {
       await expect(axios.get(`${baseurl}/transcripts/6`)).rejects.toThrow();
     });
   });
 
-  describe('getStudentID API', () => {
-    test('not present', async () => {
-      const { data } = await axios.get<number[]>(`${baseurl}/studentids?name=ryan`);
+  describe("getStudentID API", () => {
+    test("not present", async () => {
+      const { data } = await axios.get<number[]>(
+        `${baseurl}/studentids?name=ryan`
+      );
       expect(data).toStrictEqual([]);
     });
-    test('present (new)', async () => {
-      const sample : Transcript = randomTranscript();
+    test("present (new)", async () => {
+      const sample: Transcript = randomTranscript();
       const studentID = addStudent(sample.student.studentName, sample.grades);
-      const { data } = await axios.get<number[]>(`${baseurl}/studentids?name=${sample.student.studentName}`);
+      const { data } = await axios.get<number[]>(
+        `${baseurl}/studentids?name=${sample.student.studentName}`
+      );
       expect(data).toStrictEqual([studentID]);
     });
-    test('multiple', async () => {
-      const { data } = await axios.get<number[]>(`${baseurl}/studentids?name=blake`);
+    test("multiple", async () => {
+      const { data } = await axios.get<number[]>(
+        `${baseurl}/studentids?name=blake`
+      );
       // 2 and 3 are the indices of 'blake' in the default/initial student database
       expect(data).toStrictEqual([2, 3]);
     });
   });
 
-  describe('addGrade API', () => {
-    test('student not present', async () => {
-      await expect(axios.post(`${baseurl}/transcripts/6/cs101`, { grade: 75 })).rejects.toThrow();
+  describe("addGrade API", () => {
+    test("student not present", async () => {
+      await expect(
+        axios.post(`${baseurl}/transcripts/6/cs101`, { grade: 75 })
+      ).rejects.toThrow();
     });
-    test('grade already present', async () => {
-      const gradeList = [{ course: 'CS 5500', grade: 89 }];
-      const studentID = addStudent('ryan', gradeList);
+    test("grade already present", async () => {
+      const gradeList = [{ course: "CS 5500", grade: 89 }];
+      const studentID = addStudent("ryan", gradeList);
       // also testing %20 for space:
-      await expect(axios.post(`${baseurl}/transcripts/${studentID}/CS%205500`, { grade: 90 })).rejects.toThrow();
+      await expect(
+        axios.post(`${baseurl}/transcripts/${studentID}/CS%205500`, {
+          grade: 90,
+        })
+      ).rejects.toThrow();
     });
-    test('grade not defined', async () => {
-      await expect(axios.post(`${baseurl}/transcripts/3/CS%205500`, { grad: true })).rejects.toThrow();
+    test("grade not defined", async () => {
+      await expect(
+        axios.post(`${baseurl}/transcripts/3/CS%205500`, { grad: true })
+      ).rejects.toThrow();
     });
-    test('grade not numeric', async () => {
-      await expect(axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: 'A-' })).rejects.toThrow();
+    test("grade not numeric", async () => {
+      await expect(
+        axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: "A-" })
+      ).rejects.toThrow();
     });
-    test('grade OK', async () => {
+    test("grade OK", async () => {
       await axios.post(`${baseurl}/transcripts/3/CS%205500`, { grade: 89 });
-      expect(getGrade(3, 'CS 5500')).toEqual(89);
+      expect(getGrade(3, "CS 5500")).toEqual(89);
     });
   });
 
-  describe('getGrade API', () => {
-    test('student not present', async () => {
-      await expect(axios.get(`${baseurl}/transcripts/6/cs101`)).rejects.toThrow();
+  describe("getGrade API", () => {
+    test("student not present", async () => {
+      await expect(
+        axios.get(`${baseurl}/transcripts/6/cs101`)
+      ).rejects.toThrow();
     });
-    test('no grade present for this student/course', async () => {
-      await expect(axios.get(`${baseurl}/transcripts/3/CS%205500`)).rejects.toThrow();
+    test("no grade present for this student/course", async () => {
+      await expect(
+        axios.get(`${baseurl}/transcripts/3/CS%205500`)
+      ).rejects.toThrow();
     });
-    test('get grade present', async () => {
-      const gradeList = [{ course: 'CS 5500', grade: 89 }];
-      const studentID = addStudent('ryan', gradeList);
-      const { data } = await axios.get<{ course:string, grade:number }>(`${baseurl}/transcripts/${studentID}/CS%205500`);
-      expect(data.course).toBe('CS 5500');
+    test("get grade present", async () => {
+      const gradeList = [{ course: "CS 5500", grade: 89 }];
+      const studentID = addStudent("ryan", gradeList);
+      const { data } = await axios.get<{ course: string; grade: number }>(
+        `${baseurl}/transcripts/${studentID}/CS%205500`
+      );
+      expect(data.course).toBe("CS 5500");
       expect(data.grade).toEqual(89);
     });
   });
 
-  describe('issue #1', () => {
-    
+  describe("issue #1", () => {});
+
+  describe("issue #6", () => {
+    test("get all courses", async () => {
+      const { data } = await axios.get<
+        { courseName: string; description: string }[]
+      >(`${baseurl}/courses/`);
+      expect(data.length).toBe(5);
+    });
+    test("add course description", async () => {
+      const courseid = "CS3081";
+      await axios.post<{ courseName: string }>(
+        `${baseurl}/courses/:${courseid}`
+      );
+      const { data } = await axios.get<{ courseName: string }>(
+        `${baseurl}/courses/:${courseid}`
+      );
+      expect(data.courseName).toBe("CS3081");
+    });
+    test("post a course description", async () => {
+      const courseName = "CS5500";
+      const description = "Fondamentals of Software engineering";
+      await axios.post(`${baseurl}/courses`, {
+        courseName: courseName,
+        description: description,
+      });
+      const descriptionRes = await axios.get(
+        `${baseurl}/courses/${courseName}`
+      );
+      expect(descriptionRes.data).toBe(description);
+    });
   });
 });

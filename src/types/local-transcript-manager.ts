@@ -19,6 +19,11 @@ export function initialize() {
   allTranscripts = [];
   allCoursesDescriptions = [];
   StudentIDManager.reset();
+  addCourseDescription('CS5500', 'Software Engineering at NEU for Graduate Studnets');
+  addCourseDescription('CS4300', 'Introduction to Computer Graphics at NEU for undergraduate studnets');
+  addCourseDescription('CS2500', 'Fundmental of Computer Science I at NEU for undergraduate studnets');
+  addCourseDescription('DS4400', 'Machine Learning I');
+  addCourseDescription('MATH3081', 'Probability and Statistics');
   addStudent("avery", [
     { course: "DemoClass", grade: 100 },
     { course: "DemoClass2", grade: 100 },
