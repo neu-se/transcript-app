@@ -45,7 +45,10 @@ function renderGrade(grade: { course: string, grade: number }) {
         iconColor = "red.500";
     }
     return <ListItem key={grade.course + "." + grade.grade}>
-        <ListIcon as={icon} color={iconColor}/>{grade.course}: {grade.grade}%</ListItem>;
+        <ListIcon as={icon} color={iconColor}/>{grade.course}: {grade.grade}%
+        <Button>Open</Button>
+        </ListItem>;
+        
 }
 
 const AddGradeOverlay: React.FunctionComponent<{ studentID: number, refreshTranscript: RefreshStudentCallbackType }> = ({studentID, refreshTranscript}) => {

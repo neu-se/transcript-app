@@ -1,9 +1,11 @@
 // Manage the transcript database locally
-import {StudentID, Student, Course, Grade, CourseGrade, Transcript, TranscriptManager} from './transcript';
+import {StudentID, Student,CourseDetails, Course, Grade, CourseGrade, Transcript, TranscriptManager} from './transcript';
 // manage the transcript database
 
 // the database of transcript
 let allTranscripts: Transcript[] = [];
+
+let allCourses: CourseDetails[] = [];
 
 export function initialize() {
   allTranscripts = [];
@@ -99,6 +101,16 @@ export function getGrade(studentID: StudentID, course: Course): number {
 
 }
 
+export function addCourse(courseName:string,courseDescription:string){
+  allCourses.push({name:courseName,description:courseDescription});
+}
+
+export function getCourses():CourseDetails[]{
+  return allCourses;
+}
+
+
+
 export const transcriptManager : TranscriptManager = {
   addStudent(name : string) { return addStudent(name,[]); },
   getStudentIDs(name?:string) : StudentID[] {
@@ -111,6 +123,8 @@ export const transcriptManager : TranscriptManager = {
   getAll : getAll,
   getTranscript : getTranscript,
   addGrade : addGrade,
+  addCourse:addCourse,
+  getCourses:getCourses,
   getGrade(studentID : StudentID, course : Course) : Grade|undefined {
     try {
       return getGrade(studentID, course);
@@ -119,3 +133,4 @@ export const transcriptManager : TranscriptManager = {
     }
   },
 }
+
