@@ -130,6 +130,29 @@ app.get('/transcripts/:studentID/:course', (req, res) => {
   }
 });
 
+app.patch('/transcripts/:studentID/:course', (req, res) => {
+  try {
+    const former = parseInt(req.body.former);
+    const newGrade = parseInt(req.body.grade);
+    const reason = req.body.reason;
+    const studentID = parseInt(req.params.studentID);
+    const {course} = req.params;
+    console.log(`Handling PATCH former=${former} grade = ${newGrade}`);
+    const currentGrade = db.getGrade(studentID, course);
+    if (reason == undefined || reason.length == 0) {
+      res.status(400).send(`no reason received for updating grade for ${studentID} in ${course}`)
+    }
+    if (currentGrade != newGrade) {      
+      db.addGrade(studentID, course, newGrade);
+    }
+    res
+      .status(200)
+      .send({former, newGrade, reason});
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 // custom default actions
 // helpful for debugging
 // this posts to the server console so we'll know we got here

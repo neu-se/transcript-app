@@ -76,6 +76,7 @@ export async function uploadTranscript(tr:Transcript) : Promise<unknown> {
   return Promise.all(ps);
 }
 
+
 async function getGradeOrNegative(studentID : number, courseName : string) : Promise<number> {
   try {
     return await getGrade(studentID, courseName);
