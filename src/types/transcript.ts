@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid';
+
 export type StudentID = number;
 export type Student = { studentID: number, studentName: string };
 export type Course = string;
@@ -29,6 +31,12 @@ export interface TranscriptManager {
      * @param studentID student ID
      */
     getTranscript(studentID: StudentID): Transcript|undefined;
+
+    /**
+     * Delete the transcript for the given student, if one exists.
+     * @param studentID student ID
+     */
+    deleteTranscript(studentID: StudentID): void;
 
     /**
      * Add a grade to the students transcript.

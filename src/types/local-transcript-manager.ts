@@ -7,7 +7,6 @@ let allTranscripts: Transcript[] = [];
 
 export function initialize() {
   allTranscripts = [];
-  StudentIDManager.reset();
   addStudent('avery', [{course: 'DemoClass', grade: 100}, {course: 'DemoClass2', grade: 100} ]);
   addStudent('blake', [{course: 'DemoClass', grade: 80}]);
   addStudent('blake', [{course: 'DemoClass', grade: 85}, {course: 'DemoClass2', grade: 40}]);
@@ -18,23 +17,10 @@ export function getAll() {
   return allTranscripts;
 }
 
-// manages the student IDs
-class StudentIDManager {
-  private static lastUsedID = 0;
-
-  static reset() {
-    this.lastUsedID = 0;
-  }
-  
-  public static newID(): number {
-    this.lastUsedID++;
-    return this.lastUsedID;
-  }
-}
-
 // relies on freshness of studentIDs.
 export function addStudent(name: string, grades: CourseGrade[] = []): StudentID {
-  const newID = StudentIDManager.newID();
+  // random 10 digit id number
+  const newID = Math.floor(1000000000 + Math.random() * 9000000000);
   const newStudent = {studentID: newID, studentName: name};
   allTranscripts.push({student: newStudent, grades: grades});
   return newID;
@@ -53,7 +39,7 @@ export function getStudentIDs(studentName: string): StudentID[] {
 
 // deletes student with the given ID from the database.
 // throws exception if no such student.  (Is this the best idea?)
-export function deleteStudent(studentID: StudentID): void {
+export function deleteTranscript(studentID: StudentID): void {
   const index = allTranscripts.findIndex(t => (t.student.studentID === studentID));
   if (index === -1) {
     throw new Error(`no student with ID = ${studentID}`);
@@ -110,6 +96,7 @@ export const transcriptManager : TranscriptManager = {
   },
   getAll : getAll,
   getTranscript : getTranscript,
+  deleteTranscript : deleteTranscript,
   addGrade : addGrade,
   getGrade(studentID : StudentID, course : Course) : Grade|undefined {
     try {
